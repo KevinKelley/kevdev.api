@@ -8,7 +8,7 @@ use std::env;
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 pub type DbConnection = r2d2::PooledConnection<ConnectionManager<PgConnection>>;
 
-embed_migrations!();
+// embed_migrations!();
 
 lazy_static! {
     static ref POOL: Pool = {
@@ -21,10 +21,11 @@ lazy_static! {
 pub fn init() {
     lazy_static::initialize(&POOL);
     let conn = connection().expect("Failed to get db connection");
-    embedded_migrations::run(&conn).unwrap();
+    // embedded_migrations::run(&conn).unwrap();
 }
 
 pub fn connection() -> Result<DbConnection, CustomError> {
     POOL.get()
-        .map_err(|e| CustomError::new(500, format!("Failed getting db connection: {}", e)))
+        //.map_err(|e| CustomError::new(500, format!("Failed getting db connection: {}", e)))
+        .map_err(|e| CustomError{code:500, message:format!("Failed getting db connection: {}", e)})
 }

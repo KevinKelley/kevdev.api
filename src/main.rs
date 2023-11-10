@@ -1,8 +1,3 @@
-mod handler;
-mod model;
-mod response;
-mod route;
-mod db;
 
 use axum::http::{
     header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
@@ -10,6 +5,9 @@ use axum::http::{
 };
 use route::create_router;
 use tower_http::cors::CorsLayer;
+
+use todo_api::*;
+
 
 #[tokio::main]
 async fn main() {

@@ -14,10 +14,30 @@ tokio = { version = "1.33.0", features = ["full"] }
 tower-http = { version = "0.4.4", features = ["cors"] }
 uuid = { version = "1.5.0", features = ["v4", "serde"] }
 
-dotenv = "0.15"
+dotenvy = "0.15"
 diesel = { version = "2.1.3", features = ["postgres", "r2d2", "uuid", "chrono"] }
 diesel_migrations = "2.1.0"
 env_logger = "0.10.0"
 lazy_static = "1.4"
 #listenfd = "1.0.1"
 r2d2 = "0.8"
+
+
+[[bin]]
+name = "show_todos"
+doc = false
+
+[[bin]]
+name = "write_todo"
+doc = false
+
+#[[bin]]
+#name = "delete_todo"
+#doc = false
+
+#[[bin]]
+#name = "complete_todo"
+#doc = false
+
+[lib]
+doc = false
