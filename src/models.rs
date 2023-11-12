@@ -1,6 +1,7 @@
 use diesel::prelude::*;
+use serde::{Deserialize, Serialize};
 
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, Clone, Debug, Serialize, Deserialize)]
 #[diesel(table_name = crate::schema::todos)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Todo {
@@ -18,3 +19,6 @@ pub struct NewTodo<'a> {
     pub title: &'a str,
     pub body: &'a str,
 }
+
+
+
