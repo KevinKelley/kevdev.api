@@ -76,15 +76,18 @@ pub async fn create_todo_handler(
     Json(mut data): Json<Todo>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     
+    // can't allow a duplicate title...
     let todo = crate::find_todo(&mut db, &data.title);
-    //let mut vec = db.lock().await;
-    if let Some(todo) = todo    
-    {
-        let error_response = serde_json::json!({
-            "status": "fail",
-            "message": format!("Todo with title: '{}' already exists", todo.title),
-        });
-        return Err((StatusCode::CONFLICT, Json(error_response)));
+    match todo {
+        Ok(Some(todo)) => {
+            let error_response = serde_json::json!({
+                "status": "fail",
+                "message": format!("Todo with title: '{}' already exists", todo.title),
+            });
+            return Err((StatusCode::CONFLICT, Json(error_response)));
+            ()
+        },
+        _ => ()
     }
 
     //let mut title = data.title.trim_end();
@@ -148,53 +151,66 @@ pub async fn edit_todo_handler(
     State(mut db): State<DB>,
     Json(data): Json<UpdateTodoSchema>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    
-    //let id = id.to_string();
-    
-    //let mut vec = db.lock().await;
+   
+    let todo = crate::read_todo(&mut db, tid);
 
-    // if let Some(todo) = vec.iter_mut().find(|todo| todo.id.to_string() == id) {
-    //     let datetime = chrono::Utc::now();
-    //     let title = body
-    //         .title
-    //         .to_owned()
-    //         .unwrap_or_else(|| todo.title.to_owned());
-    //     let content = body
-    //         .body
-    //         .to_owned()
-    //         .unwrap_or_else(|| todo.body.to_owned());
-    //     let completed = body.completed.unwrap_or(todo.completed);
-    //     let payload = Todo {
-    //         id: todo.id.to_owned(),
-    //         title: if !title.is_empty() {
-    //             title
-    //         } else {
-    //             todo.title.to_owned()
-    //         },
-    //         body: if !content.is_empty() {
-    //             content
-    //         } else {
-    //             todo.body.to_owned()
-    //         },
-    //         completed: completed,
-    //         // createdAt: todo.createdAt,
-    //         // updatedAt: Some(datetime),
-    //     };
-    //     *todo = payload;
-
-    //     let json_response = SingleTodoResponse {
-    //         status: "success".to_string(),
-    //         data: TodoData { todo: todo.clone() },
-    //     };
-    //     Ok((StatusCode::OK, Json(json_response)))
-    // } else {
-        let error_response = serde_json::json!({
-            "status": "fail",
-            "message": format!("Todo with ID: {} not found", tid)
-        });
-
-        Err((StatusCode::NOT_FOUND, Json(error_response)))
-    // }
+    match todo {
+        Ok(Some(todo)) => {
+            //new values: if None was passed as option, use old value
+            let title = data
+                .title
+                .to_owned()
+                .unwrap_or_else(|| todo.title.to_owned());
+            let body = data
+                .body
+                .to_owned()
+                .unwrap_or_else(|| todo.body.to_owned());
+            let completed = data.completed.unwrap_or(todo.completed);
+            
+            let updated_todo = crate::update_todo(&mut db, tid, &title, &body, completed);
+            match updated_todo {
+                Ok(Some(todo)) => {
+                    let json_response = SingleTodoResponse {
+                        status: "success".to_string(),
+                        data: TodoData { todo: todo.clone() },
+                    };
+                    return Ok((StatusCode::OK, Json(json_response)))
+                },
+                Ok(None) => {
+                    // println!("Unable to find todo {}", id)
+                    let error_response = serde_json::json!({
+                        "status": "fail",
+                        "message": format!("Todo with ID: {} not found", tid)
+                    });
+                    return Err((StatusCode::NOT_FOUND, Json(error_response)))
+                },
+                Err(e) => {
+                    // println!("An error occured while fetching todo {}", id)
+                    let error_response = serde_json::json!({
+                        "status": "fail",
+                        "message": format!("internal error while searching for todo {}", tid)
+                    });
+                    return Err((StatusCode::NOT_FOUND, Json(error_response)))
+                },
+            }
+        },
+        Ok(None) => { 
+            // println!("Unable to find todo {}", id)
+            let error_response = serde_json::json!({
+                "status": "fail",
+                "message": format!("Todo with ID: {} not found", tid)
+            });
+            return Err((StatusCode::NOT_FOUND, Json(error_response)))
+        },
+        Err(_) => {
+            // println!("An error occured while fetching todo {}", id)
+            let error_response = serde_json::json!({
+                "status": "fail",
+                "message": format!("internal error while searching for todo {}", tid)
+            });
+            return Err((StatusCode::NOT_FOUND, Json(error_response)))
+        },
+    }
 }
 
 pub async fn delete_todo_handler(

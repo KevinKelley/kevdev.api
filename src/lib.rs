@@ -62,17 +62,27 @@ pub fn create_todo(conn: &mut PgConnection, ttitle: &str, tbody: &str) -> Todo {
         .expect("Error saving new post")
 }
 
-pub fn read_all_todo(conn: &mut PgConnection, skip: u32, limit: u32) -> Vec<Todo> {
+////////////////////////////
+/// stackoverflow: 
+// let mut it = vec![1, 2, 3].into_iter();
+// let v : Vec<_> = it.by_ref().take(2).collect();
+// println!("v = {:?}", v);
+// for x in it {
+//     println!("{}", x);
+// }
+pub fn read_all_todo(conn: &mut PgConnection, offset: u32, limit: u32) -> Vec<Todo> {
     let connection = &mut crate::establish_connection();
     let result = todos
         .filter(completed.eq(false))
-        .skip(skip)
-        .limit(limit)
+        //.skip(offset)     // or...
+        //.dropping(offset) // eager
+        .limit(limit as i64)
         .select(Todo::as_select())
         .load(connection)
         .expect("Error loading posts");
     return result;
 }
+/// read a todo by id
 pub fn read_todo(conn: &mut PgConnection, tid: i32) -> Result<Option<Todo>, diesel::result::Error> {
 // pub fn read_todo(conn: &mut PgConnection, tid: i32) -> Result<Option<Todo>> {
         let connection = &mut crate::establish_connection();
@@ -83,29 +93,43 @@ pub fn read_todo(conn: &mut PgConnection, tid: i32) -> Result<Option<Todo>, dies
         .optional(); // This allows for returning an Option<Todo>, otherwise it will throw an error
     return todo;
 }
-pub fn find_todo(conn: &mut PgConnection, ttitle: &str) -> Option<Todo> {
+/// find a matching title
+pub fn find_todo(conn: &mut PgConnection, ttitle: &str) -> Result<Option<Todo>, diesel::result::Error> {
     let connection = &mut crate::establish_connection();
-    None
+    let todo = todos
+        .filter(title.eq(ttitle))
+        .select(Todo::as_select())
+        .first(connection)
+        .optional(); // This allows for returning an Option<Todo>, otherwise it will throw an error
+    return todo;
 }
-pub fn update_todo(conn: &mut PgConnection, tid: i32, ttitle: &str, tbody: &str, tcompleted: bool) -> Todo {
-    let connection = &mut crate::establish_connection();
-    create_empty_todo()
-}
-pub fn complete_todo(conn: &mut PgConnection, tid: i32) -> Todo {
+pub fn update_todo(conn: &mut PgConnection, tid: i32, ttitle: &str, tbody: &str, tcompleted: bool) 
+    -> Result<Option<Todo>, diesel::result::Error> {
+    
+    // let updated_row = diesel::update(users.filter(id.eq(1)))
+    // .set((name.eq("James"), surname.eq("Bond")))
+    // .get_result(connection);
+    // assert_eq!(Ok((1, "James".to_string(), "Bond".to_string())), updated_row);
+    
     let connection = &mut crate::establish_connection();
     let todo = diesel::update(todos.find(tid))
-    .set(completed.eq(true))   // ?????
+    .set((title.eq(ttitle), body.eq(tbody), completed.eq(tcompleted)))  
     .returning(Todo::as_returning())
     .get_result(connection)
     .unwrap();
-    todo
+    Ok(Some(todo))
+}
+pub fn complete_todo(conn: &mut PgConnection, tid: i32) -> Result<Option<Todo>, diesel::result::Error> {
+    let connection = &mut crate::establish_connection();
+    let todo = diesel::update(todos.find(tid))
+    .set(completed.eq(true))  
+    .returning(Todo::as_returning())
+    .get_result(connection)
+    .unwrap();
+    Ok(Some(todo))
 }
 pub fn delete_todo(conn: &mut PgConnection, tid: i32) -> Option<Todo> {
     let connection = &mut crate::establish_connection();
     None
 }
 
-
-fn create_empty_todo() -> Todo {
-    Todo { id:0, title:"".to_string(), body:"".to_string(), completed:false }
-}

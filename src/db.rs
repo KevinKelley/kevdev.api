@@ -29,3 +29,19 @@ pub fn connection() -> Result<DbConnection, CustomError> {
         //.map_err(|e| CustomError::new(500, format!("Failed getting db connection: {}", e)))
         .map_err(|e| CustomError{code:500, message:format!("Failed getting db connection: {}", e)})
 }
+
+
+
+// let engine = "mysql";
+// let username = "root";
+// let password = "123456";
+// let host = "localhost";
+// let port = 3306;
+// let db = "test";
+// let url = format!(
+//     "{}://{}:{}@{}:{}/{}",
+//     engine, username, password, host, port, db
+// );
+// let connection = MysqlConnection::establish(&url)
+//     .expect(&format!("Failed to connect database:{}-{}", engine, db));
+// Database { connection }
