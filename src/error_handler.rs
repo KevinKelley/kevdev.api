@@ -9,9 +9,12 @@ pub struct CustomError {
     pub message: String
 }
 
-// impl new() for CustomError {
+impl CustomError {
 
-// }
+    pub fn new(code:u32, message:&str) -> CustomError {
+        CustomError {code, message:message.to_string()}
+    }
+}
 
 // impl fmt::Display for CustomError {
     

@@ -9,10 +9,26 @@ mod response;
 mod route;
 mod db;
 
+//use error_chain::error_chain;
+
+use anyhow::{Context, Result};
+
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenvy::dotenv;
 use std::env;
+
+// error_chain! {
+//     foreign_links {
+//         Utf8(std::str::Utf8Error);
+//         AddrParse(std::net::AddrParseError);
+//         Diesel(diesel::result::Error);
+//     }
+// }
+// fn main() -> Result<()> {
+//     let parsed = Url::parse("https://httpbin.org/cookies/set?k2=v2&k1=v1")?;
+
+
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
@@ -57,8 +73,9 @@ pub fn read_all_todo(conn: &mut PgConnection, skip: u32, limit: u32) -> Vec<Todo
         .expect("Error loading posts");
     return result;
 }
-pub fn read_todo(conn: &mut PgConnection, tid: i32) -> Result<Option<Todo>, CustomError> {
-    let connection = &mut crate::establish_connection();
+pub fn read_todo(conn: &mut PgConnection, tid: i32) -> Result<Option<Todo>, diesel::result::Error> {
+// pub fn read_todo(conn: &mut PgConnection, tid: i32) -> Result<Option<Todo>> {
+        let connection = &mut crate::establish_connection();
     let todo = todos
         .find(tid)
         .select(Todo::as_select())
