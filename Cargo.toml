@@ -25,21 +25,21 @@ error-chain = "0.12.4"
 anyhow = "1.0.75"
 
 
-[[bin]]
-name = "show_todos"
-doc = false
-
-[[bin]]
-name = "write_todo"
-doc = false
-
 #[[bin]]
-#name = "delete_todo"
+#name = "show_todos"
 #doc = false
-
+#
 #[[bin]]
-#name = "complete_todo"
+#name = "write_todo"
 #doc = false
-
-[lib]
-doc = false
+#
+#[[bin]]
+##name = "delete_todo"
+##doc = false
+#
+#[[bin]]
+##name = "complete_todo"
+##doc = false
+#
+##[lib]
+##doc = false

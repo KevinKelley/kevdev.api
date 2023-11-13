@@ -1,4 +1,4 @@
-use diesel::prelude::*;
+// use diesel::prelude::*;
 
 use axum::{
     routing::{get, post, patch, delete},
@@ -15,7 +15,8 @@ use crate::{
 
 pub fn create_router() -> Router {
     // let db = model::todo_db();
-    let db_conn = crate::db::connection();
+    // let db_conn = crate::db::connection();
+    // let db_conn = crate::db::todo_db();
 
     Router::new()
         .route("/api/healthchecker", get(health_checker_handler))
