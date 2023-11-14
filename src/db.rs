@@ -48,6 +48,12 @@ pub fn establish_connection() -> PgConnection {
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
 }
 
+// - let connection = PgConnection::establish_connection("…")?;
+// - let result = some_query.load(&connection)?;
+// + let mut connection = PgConnection::establish_connection("…")?;
+// + let result = some_query.load(&mut connection)?;
+
+
 // pub fn todo_db() -> DB {
 //     Arc::new(Mutex::new(connection()))
 // }
