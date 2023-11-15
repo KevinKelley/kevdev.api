@@ -2,8 +2,4 @@
 /dist
 /executables
 
-#these for copying and have git repo already inside: use submodule
-/diesel_demo_blog_cli
-/rust-crud-users-api
-
 /kevdev.code-workspace

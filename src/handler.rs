@@ -8,11 +8,11 @@ use uuid::Uuid;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    models::{Todo, NewTodo},
+    models::todo::{Todo, NewTodo},
     response::{SingleTodoResponse, TodoData, TodoListResponse},
     db::*,
 };
-// use crate::db::DB;
+// use crate::models::todo::*;
 
 
 #[derive(Debug, Deserialize, Default)]
@@ -29,12 +29,12 @@ pub struct UpdateTodoSchema {
     pub completed: Option<bool>,
 }
 
-const ok        : StatusCode = StatusCode::OK;
-const created   : StatusCode = StatusCode::CREATED;
-const conflict  : StatusCode = StatusCode::CONFLICT;
-const error     : StatusCode = StatusCode::INTERNAL_SERVER_ERROR;
-const not_found : StatusCode = StatusCode::NOT_FOUND;
-const no_content: StatusCode = StatusCode::NO_CONTENT;
+// const ok        : StatusCode = StatusCode::OK;
+// const created   : StatusCode = StatusCode::CREATED;
+// const conflict  : StatusCode = StatusCode::CONFLICT;
+// const error     : StatusCode = StatusCode::INTERNAL_SERVER_ERROR;
+// const not_found : StatusCode = StatusCode::NOT_FOUND;
+// const no_content: StatusCode = StatusCode::NO_CONTENT;
 // ok.canonical_reason();
 // ok.is_informational();
 // ok.is_success();

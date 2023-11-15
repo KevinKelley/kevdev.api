@@ -1,5 +1,5 @@
-use crate::models::Todo;
 use serde::Serialize;
+use crate::models::todo::Todo;
 
 //////////////////////////////
 /// these for transport (as json)

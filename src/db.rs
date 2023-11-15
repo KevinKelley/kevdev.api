@@ -1,14 +1,14 @@
 use crate::error_handler::CustomError;
 use diesel::pg::PgConnection;
 use diesel::r2d2::ConnectionManager;
-use diesel::prelude::*;
+//use diesel::prelude::*;
 use lazy_static::lazy_static;
 use r2d2;
 use dotenvy::dotenv;
 use std::env;
 
-use std::sync::Arc;
-use tokio::sync::Mutex;
+// use std::sync::Arc;
+// use tokio::sync::Mutex;
 
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
@@ -118,7 +118,7 @@ pub fn establish_connection() -> PgConnection {
 
 // use crate::error_handler::{CustomError};
 
-use crate::models::{NewTodo, Todo};
+use crate::models::todo::{NewTodo, Todo};
 use diesel::prelude::*;
 use crate::schema::todos::dsl::*;
 
