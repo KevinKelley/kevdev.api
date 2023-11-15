@@ -1,5 +1,5 @@
 [package]
-name = "todo-api"
+name = "kevdev_api"
 version = "0.1.0"
 edition = "2021"
 
@@ -23,6 +23,8 @@ lazy_static = "1.4"
 r2d2 = "0.8"
 error-chain = "0.12.4"
 anyhow = "1.0.75"
+argon2 = "0.5.2"
+clap = "4.4.8"
 
 
 #[[bin]]
